@@ -1,4 +1,5 @@
-;(function ( $, window, document, undefined ) {
+;
+(function ($, window, document, undefined) {
 
   /**
    * animo is a powerful little tool that makes managing CSS animations extremely easy. Stack animations, set callbacks, make magic.
@@ -6,17 +7,17 @@
    *
    * @author Daniel Raftery : twitter/ThrivingKings
    * @version 1.0.3
-  */
-  function animo( element, options, callback, other_cb ) {
-    
+   */
+  function animo(element, options, callback, other_cb) {
+
     // Default configuration
     var defaults = {
-    	duration: 1,
-    	animation: null,
-    	iterate: 1,
-    	delay: 0,
-    	timing: "linear",
-    	keep: false
+      duration: 1,
+      animation: null,
+      iterate: 1,
+      delay: 0,
+      timing: "linear",
+      keep: false
     };
 
     // Browser prefixes for CSS
@@ -34,56 +35,56 @@
     this.listening = false;
 
     // Figure out where the callback is
-    var cb = (typeof callback == "function" ? callback : other_cb);
+    var cb = (typeof callback === "function" ? callback : other_cb);
 
     // Options can sometimes be a command
-    switch(options) {
+    switch (options) {
 
-      case "blur":
+    case "blur":
 
-      	defaults = {
-      		amount: 3,
-      		duration: 0.5,
-      		focusAfter: null
-      	};
+      defaults = {
+        amount: 3,
+        duration: 0.5,
+        focusAfter: null
+      };
 
-      	this.options = $.extend( defaults, callback );
+      this.options = $.extend(defaults, callback);
 
-  	    this._blur(cb);
+      this._blur(cb);
 
-        break;
+      break;
 
-      case "focus":
+    case "focus":
 
-  	  	this._focus();
+      this._focus();
 
-        break;
+      break;
 
-      case "rotate":
+    case "rotate":
 
-        defaults = {
-          degrees: 15,
-          duration: 0.5
-        };
+      defaults = {
+        degrees: 15,
+        duration: 0.5
+      };
 
-        this.options = $.extend( defaults, callback );
+      this.options = $.extend(defaults, callback);
 
-        this._rotate(cb);
+      this._rotate(cb);
 
-        break;
+      break;
 
-      case "cleanse":
+    case "cleanse":
 
-        this.cleanse();
+      this.cleanse();
 
-        break;
+      break;
 
-      default:
+    default:
 
-	    this.options = $.extend( defaults, options );
+      this.options = $.extend(defaults, options);
 
-	    this.init(cb);
-  	
+      this.init(cb);
+
       break;
     }
   }
@@ -91,27 +92,27 @@
   animo.prototype = {
 
     // A standard CSS animation
-    init: function(callback) {
-      
+    init: function (callback) {
+
       var $me = this;
 
       // Are we stacking animations?
-      if(Object.prototype.toString.call( $me.options.animation ) === '[object Array]') {
-      	$.merge($me.queue, $me.options.animation);
+      if (Object.prototype.toString.call($me.options.animation) === '[object Array]') {
+        $.merge($me.queue, $me.options.animation);
       } else {
-	      $me.queue.push($me.options.animation);
-	    }
+        $me.queue.push($me.options.animation);
+      }
 
-	    $me.cleanse();
+      $me.cleanse();
 
-	    $me.animate(callback);
-      
+      $me.animate(callback);
+
     },
 
     // The actual adding of the class and listening for completion
-    animate: function(callback) {
+    animate: function (callback) {
 
-    	this.element.addClass('animated');
+      this.element.addClass('animated');
 
       this.element.addClass(this.queue[0]);
 
@@ -120,37 +121,38 @@
       var ai = this.prefixes.length;
 
       // Add the options for each prefix
-      while(ai--) {
+      while (ai--) {
 
-      	this.element.css(this.prefixes[ai]+"animation-duration", this.options.duration+"s");
-        
-      	this.element.css(this.prefixes[ai]+"animation-delay", this.options.delay+"s");
+        this.element.css(this.prefixes[ai] + "animation-duration", this.options.duration + "s");
 
-      	this.element.css(this.prefixes[ai]+"animation-iteration-count", this.options.iterate);
+        this.element.css(this.prefixes[ai] + "animation-delay", this.options.delay + "s");
 
-      	this.element.css(this.prefixes[ai]+"animation-timing-function", this.options.timing);
+        this.element.css(this.prefixes[ai] + "animation-iteration-count", this.options.iterate);
+
+        this.element.css(this.prefixes[ai] + "animation-timing-function", this.options.timing);
 
       }
 
-      var $me = this, _cb = callback;
+      var $me = this,
+        _cb = callback;
 
-      if($me.queue.length>1) {
+      if ($me.queue.length > 1) {
         _cb = null;
       }
 
       // Listen for the end of the animation
-      this._end("AnimationEnd", function() {
+      this._end("AnimationEnd", function () {
 
         // If there are more, clean it up and move on
-        if($me.element.hasClass($me.queue[0])) {
+        if ($me.element.hasClass($me.queue[0])) {
 
-          if(!$me.options.keep) {
+          if (!$me.options.keep) {
             $me.cleanse();
           }
 
           $me.queue.shift();
 
-          if($me.queue.length) {
+          if ($me.queue.length) {
 
             $me.animate(callback);
           }
@@ -158,58 +160,58 @@
       }, _cb);
     },
 
-    cleanse: function() {
+    cleanse: function () {
 
-    	this.element.removeClass('animated');
+      this.element.removeClass('animated');
 
-  		this.element.removeClass(this.queue[0]);
+      this.element.removeClass(this.queue[0]);
 
       this.element.removeClass(this.element.data("animo"));
 
-  		var ai = this.prefixes.length;
+      var ai = this.prefixes.length;
 
-  		while(ai--) {
+      while (ai--) {
 
-      	this.element.css(this.prefixes[ai]+"animation-duration", "");
-        
-      	this.element.css(this.prefixes[ai]+"animation-delay", "");
+        this.element.css(this.prefixes[ai] + "animation-duration", "");
 
-      	this.element.css(this.prefixes[ai]+"animation-iteration-count", "");
+        this.element.css(this.prefixes[ai] + "animation-delay", "");
 
-      	this.element.css(this.prefixes[ai]+"animation-timing-function", "");
+        this.element.css(this.prefixes[ai] + "animation-iteration-count", "");
 
-        this.element.css(this.prefixes[ai]+"transition", "");
+        this.element.css(this.prefixes[ai] + "animation-timing-function", "");
 
-        this.element.css(this.prefixes[ai]+"transform", "");
+        this.element.css(this.prefixes[ai] + "transition", "");
 
-        this.element.css(this.prefixes[ai]+"filter", "");
+        this.element.css(this.prefixes[ai] + "transform", "");
+
+        this.element.css(this.prefixes[ai] + "filter", "");
 
       }
     },
 
-    _blur: function(callback) {
+    _blur: function (callback) {
 
-      if(this.element.is("img")) {
+      if (this.element.is("img")) {
 
-      	var svg_id = "svg_" + (((1 + Math.random()) * 0x1000000) | 0).toString(16).substring(1);
-      	var filter_id = "filter_" + (((1 + Math.random()) * 0x1000000) | 0).toString(16).substring(1);
+        var svg_id = "svg_" + (((1 + Math.random()) * 0x1000000) | 0).toString(16).substring(1);
+        var filter_id = "filter_" + (((1 + Math.random()) * 0x1000000) | 0).toString(16).substring(1);
 
-      	$('body').append('<svg version="1.1" xmlns="http://www.w3.org/2000/svg" id="'+svg_id+'" style="height:0;position:absolute;top:-1000px;"><filter id="'+filter_id+'"><feGaussianBlur stdDeviation="'+this.options.amount+'" /></filter></svg>');
+        $('body').append('<svg version="1.1" xmlns="http://www.w3.org/2000/svg" id="' + svg_id + '" style="height:0;position:absolute;top:-1000px;"><filter id="' + filter_id + '"><feGaussianBlur stdDeviation="' + this.options.amount + '" /></filter></svg>');
 
-      	var ai = this.prefixes.length;
+        var ai = this.prefixes.length;
 
-    		while(ai--) {
+        while (ai--) {
 
-        	this.element.css(this.prefixes[ai]+"filter", "blur("+this.options.amount+"px)");
+          this.element.css(this.prefixes[ai] + "filter", "blur(" + this.options.amount + "px)");
 
-        	this.element.css(this.prefixes[ai]+"transition", this.options.duration+"s all linear");
+          this.element.css(this.prefixes[ai] + "transition", this.options.duration + "s all linear");
 
         }
 
-        this.element.css("filter", "url(#"+filter_id+")");
+        this.element.css("filter", "url(#" + filter_id + ")");
 
         this.element.data("svgid", svg_id);
-      
+
       } else {
 
         var color = this.element.css('color');
@@ -217,13 +219,13 @@
         var ai = this.prefixes.length;
 
         // Add the options for each prefix
-        while(ai--) {
+        while (ai--) {
 
-          this.element.css(this.prefixes[ai]+"transition", "all "+this.options.duration+"s linear");
+          this.element.css(this.prefixes[ai] + "transition", "all " + this.options.duration + "s linear");
 
         }
 
-        this.element.css("text-shadow", "0 0 "+this.options.amount+"px "+color);
+        this.element.css("text-shadow", "0 0 " + this.options.amount + "px " + color);
         this.element.css("color", "transparent");
       }
 
@@ -231,41 +233,41 @@
 
       var $me = this;
 
-      if(this.options.focusAfter) {
+      if (this.options.focusAfter) {
 
-        var focus_wait = window.setTimeout(function() {
+        var focus_wait = window.setTimeout(function () {
 
           $me._focus();
 
           focus_wait = window.clearTimeout(focus_wait);
 
-        }, (this.options.focusAfter*1000));
+        }, (this.options.focusAfter * 1000));
       }
 
     },
 
-    _focus: function() {
+    _focus: function () {
 
-    	var ai = this.prefixes.length;
+      var ai = this.prefixes.length;
 
-      if(this.element.is("img")) {
+      if (this.element.is("img")) {
 
-    		while(ai--) {
+        while (ai--) {
 
-        	this.element.css(this.prefixes[ai]+"filter", "");
+          this.element.css(this.prefixes[ai] + "filter", "");
 
-        	this.element.css(this.prefixes[ai]+"transition", "");
+          this.element.css(this.prefixes[ai] + "transition", "");
 
         }
 
-        var $svg = $('#'+this.element.data('svgid'));
+        var $svg = $('#' + this.element.data('svgid'));
 
         $svg.remove();
       } else {
 
-        while(ai--) {
+        while (ai--) {
 
-          this.element.css(this.prefixes[ai]+"transition", "");
+          this.element.css(this.prefixes[ai] + "transition", "");
 
         }
 
@@ -274,16 +276,16 @@
       }
     },
 
-    _rotate: function(callback) {
+    _rotate: function (callback) {
 
       var ai = this.prefixes.length;
 
       // Add the options for each prefix
-      while(ai--) {
+      while (ai--) {
 
-        this.element.css(this.prefixes[ai]+"transition", "all "+this.options.duration+"s linear");
+        this.element.css(this.prefixes[ai] + "transition", "all " + this.options.duration + "s linear");
 
-        this.element.css(this.prefixes[ai]+"transform", "rotate("+this.options.degrees+"deg)");
+        this.element.css(this.prefixes[ai] + "transform", "rotate(" + this.options.degrees + "deg)");
 
       }
 
@@ -291,38 +293,38 @@
 
     },
 
-    _end: function(type, todo, callback) {
+    _end: function (type, todo, callback) {
 
       var $me = this;
 
-      var binding = type.toLowerCase()+" webkit"+type+" o"+type+" MS"+type;
+      var binding = type.toLowerCase() + " webkit" + type + " o" + type + " MS" + type;
 
-      this.element.bind(binding, function() {
-        
+      this.element.bind(binding, function () {
+
         $me.element.unbind(binding);
 
-        if(typeof todo == "function") {
+        if (typeof todo == "function") {
 
           todo();
         }
 
-        if(typeof callback == "function") {
+        if (typeof callback == "function") {
 
           callback($me);
         }
       });
-      
+
     }
   };
 
-  $.fn.animo = function ( options, callback, other_cb ) {
-    
-    return this.each(function() {
-			
-			new animo( this, options, callback, other_cb );
+  $.fn.animo = function (options, callback, other_cb) {
 
-		});
+    return this.each(function () {
+
+      new animo(this, options, callback, other_cb);
+
+    });
 
   };
 
-})( jQuery, window, document );
+})(jQuery, window, document);
